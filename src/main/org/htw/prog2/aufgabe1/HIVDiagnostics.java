@@ -2,19 +2,32 @@ package org.htw.prog2.aufgabe1;
 import org.apache.commons.cli.*;
 
 public class HIVDiagnostics {
-
-    /**
-     * Parst die Kommandozeilenargumente. Gibt null zurück, falls:
-     * <ul>
-     *     <li>Ein Fehler beim Parsen aufgetreten ist (z.B. eins der erforderlichen Argumente nicht angegeben wurde)</li>
-     *     <li>Bei -m, -d und -r nicht die gleiche Anzahl an Argumenten angegeben wurde</li>
-     * </ul>
-     * @param args Array mit Kommandozeilen-Argumenten
-     * @return CommandLine-Objekt mit geparsten Optionen
-     */
-
     public static CommandLine parseOptions(String[] args) {
-        return null;
+        try{
+            Options options = new Options();
+
+            options.addOption("m", "mutationfiles", true, "Mutation file");
+            options.addOption("d", "drugnames", true, "Drug name");
+            options.addOption("r", "references", true, "Reference fasta");
+            options.addOption("p", "patientseqs", true, "Patient fasta");
+
+            CommandLineParser parser = new DefaultParser();
+            CommandLine cmd = parser.parse(options,args);
+
+            if(!cmd.hasOption("m") || !cmd.hasOption("d")|| !cmd.hasOption("r") || !cmd.hasOption("r")
+                    || !cmd.hasOption("p")){
+                HelpFormatter formatter = new HelpFormatter();
+
+                formatter.printHelp("HIVDiagnostics",options);
+                return null;
+            }
+            return cmd;
+        }catch(Exception e){
+            HelpFormatter formatter = new HelpFormatter();
+
+            formatter.printHelp("HIVDiagnostics",new Options());
+            return null;
+        }
     }
 
     public static void main(String[] args) {

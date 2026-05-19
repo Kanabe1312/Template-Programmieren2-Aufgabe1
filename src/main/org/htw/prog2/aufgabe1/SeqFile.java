@@ -3,62 +3,91 @@ package org.htw.prog2.aufgabe1;
 import java.util.HashSet;
 
 public class SeqFile {
-    /**
-     * Reads the specified FASTA file and stores sequences. In case the file does not exist or is not a valid FASTA
-     * file, the Constructor does not throw an Exception. Instead, isValid() on the resulting object will return false.
-     * @param filename
-     */
+
+    private HashSet<String> sequences = new HashSet<>();
+    private boolean valid = false;
+    private String fistSequence = "";
+
     public SeqFile(String filename) {
+        valid = readFile(filename);
     }
-    
-    /**
-     * Reads the specified FASTA file.
-     * @param filename The path to the FASTA file
-     * @return false if the file could not be parsed (wrong format, does not exist), true otherwise.
-     */
+
     private boolean readFile(String filename) {
-        return false;
+       try{
+           java.io.File file = new java.io.File(filename);
+           if(!file.exists()){
+               return false;
+           }
+           java.util.Scanner scanner = new java.util.Scanner(file);
+           StringBuilder seq = new StringBuilder();
+           while(scanner.hasNextLine()){
+               String line = scanner.nextLine().trim();
+
+               if(line.isEmpty()){
+                   continue;
+               }
+               if(line.startsWith(">")){
+                   if(seq.length()>0){
+
+                       addSequence(seq);
+                       seq = new StringBuilder();
+                   }
+               }else{
+                   seq.append(line);
+               }
+           }
+          if(seq.length()>0){
+              addSequence(seq);
+          }
+          scanner.close();
+
+          return sequences.size() > 0;
+       } catch (Exception e) {
+           return false;
+       }
     }
 
-    /**
-     * Adds the sequence in the passed StringBuilder to the internal hash set and also sets the first sequence if it
-     * is still empty.
-     * @param seq SequenceBuilder to get the sequence from.
-     * @return The length of the added sequence.
-     */
+
+
+
+
+
     private int addSequence(StringBuilder seq) {
-        return -1;
+        String s = seq.toString();
+
+        sequences.add(s);
+
+        if (sequences.size() == 1) {
+            fistSequence = s;
+        }
+
+        return s.length();
     }
 
-    /**
-     *
-     * @return The number of sequences read from the FASTA file, or 0 if isValid() is false.
-     */
     public int getNumberOfSequences() {
-        return 0;
+        if(!valid){
+            return 0;
+        }
+        return sequences.size();
     }
 
-    /**
-     *
-     * @return The sequences read from the FASTA file, or an empty HashSet if isValid() is false.
-     */
+
     public HashSet<String> getSequences() {
-        return null;
+        if (!valid) {
+            return new HashSet<>();
+        }
+        return sequences;
     }
 
-    /**
-     *
-     * @return The first sequence read from the FASTA file, or an empty String if isValid() is false.
-     */
     public String getFirstSequence() {
-        return "";
+        if (!valid) {
+            return "";
+        }
+        return fistSequence;
     }
 
-    /**
-     *
-     * @return true if the FASTA file was read successfully, false otherwise.
-     */
+
     public boolean isValid() {
-        return false;
+        return valid;
     }
 }
